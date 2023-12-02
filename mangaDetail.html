@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <title>Manga Detail</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    h1 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    #backButton {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background-color: #4caf50;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      z-index: 1000;
+    }
+
+    canvas {
+      width: 80%;
+      max-width: 800px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <button id="backButton" onclick="goBack()">Go Back</button>
+  <h1>Manga Statistics</h1>
+  <h1 id="mangaName"></h1>
+  <canvas id="statisticsChart"></canvas>
+
+  <script>
+    function goBack() {
+      sessionStorage.clear();
+      window.location.href = 'index.html';
+    }
+
+    const mangaId = sessionStorage.getItem('mangaId');
+    const mangaNameElement = document.getElementById('mangaName');
+    const statisticsChart = document.getElementById('statisticsChart').getContext('2d');
+
+    mangaNameElement.innerText = sessionStorage.getItem('mangaName');
+
+    fetch(`https://cors-anywhere.herokuapp.com/https://api.mangadex.org//statistics/manga/${mangaId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+      })
+      .then(response => response.json())
+      .then(data => {
+        const chartLabel = [];
+        const chartData = [];
+
+        for (const key in data.statistics[mangaId].rating.distribution) {
+          if (data.statistics[mangaId].rating.distribution.hasOwnProperty(key)) {
+            chartLabel.push(key);
+            chartData.push(data.statistics[mangaId].rating.distribution[key]);
+          }
+        }
+
+        const chartDataConfig = {
+          labels: chartLabel,
+          datasets: [{
+            label: 'Manga Rating Distribution',
+            data: chartData,
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1,
+          }]
+        };
+
+        const chartOptions = {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        };
+
+        new Chart(statisticsChart, {
+          type: 'bar',
+          data: chartDataConfig,
+          options: chartOptions
+        });
+      })
+      .catch(error => console.error('Error fetching manga statistics:', error));
+  </script>
+</body>
+
+</html>
