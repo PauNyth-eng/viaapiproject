@@ -149,7 +149,7 @@
                 const mangaText = document.createElement('p');
                 mangaText.style.width = '100%';
                 const author = await GetAuthor();
-                mangaText.innerHTML = `<strong>Title:</strong> ${manga.attributes.title.en}`;
+                mangaText.innerHTML = `<strong>Title:</strong> ${manga.attributes.title.en} <strong>Author:</strong> ${author}`;
                 mangaItem.appendChild(mangaText);
             }
 
