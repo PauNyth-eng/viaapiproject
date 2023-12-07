@@ -134,8 +134,13 @@
             })
             mangaItem.id = manga.id;
             
-            const setMangaImage = async () =>
+            const setManga = async () =>
             {
+                const mangaText = document.createElement('p');
+                mangaText.style.width = '100%';
+                const author = await GetAuthor();
+                mangaText.innerHTML = `<strong>Title:</strong> ${manga.attributes.title.en} <strong>Author:</strong> ${author}`;
+                mangaItem.appendChild(mangaText);
                 const mangaImage = document.createElement('img');
                 mangaImage.src = await GetCoverImage();
                 mangaImage.className = 'mangaImage';
@@ -146,15 +151,10 @@
             
             const setMangaAttributes = async () =>
             {
-                const mangaText = document.createElement('p');
-                mangaText.style.width = '100%';
-                const author = await GetAuthor();
-                mangaText.innerHTML = `<strong>Title:</strong> ${manga.attributes.title.en} <strong>Author:</strong> ${author}`;
-                mangaItem.appendChild(mangaText);
+                
             }
 
-            setMangaImage();
-            setMangaAttributes();
+            setManga();
 
             mangaList.appendChild(mangaItem);
         });
